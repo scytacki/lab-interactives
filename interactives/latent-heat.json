@@ -1,0 +1,113 @@
+{
+  "title": "Latent Heat",
+  "publicationStatus": "draft",
+  "subtitle": "",
+  "about": "",
+  "models": [
+    {
+      "type": "md2d",
+      "id": "page7$0",
+      "url": "../../interactives/latent-heat-model.json",
+      "viewOptions": {
+        "controlButtons": "play_reset_step"
+      },
+      "onLoad": [
+        "callEvery(100, function(){",
+        "  if(!get('applyHeat')) return;",
+        "  var numAtoms, i, props, newVx, newVy;",
+        "  batch(function(){",
+        "    numAtoms = getNumberOfAtoms()",
+        "    for(i=0; i<numAtoms; i++){",
+        "      props = getAtomProperties(i);",
+        "      if(props.vx >= 0) newVx =  Math.sqrt(0.000000001+props.vx*props.vx)",
+        "      if(props.vx < 0) newVx = - Math.sqrt(0.000000001+props.vx*props.vx)",
+        "      if(props.vy >= 0) newVy =  Math.sqrt(0.000000001+props.vy*props.vy)",
+        "      if(props.vy < 0) newVy = - Math.sqrt(0.000000001+props.vy*props.vy)",
+        "      setAtomProperties(i, {vx:newVx, vy:newVy});",
+        "    }",
+        "  });",
+        "});"
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "name": "applyHeat",
+      "label": "Apply Heat",
+      "initialValue": true
+    }
+  ],
+  "filteredOutputs": [
+    {
+      "name": "temperatureFiltered",
+      "unitType": "temperature",
+      "label": "Temperature",
+      "property": "temperature",
+      "type": "RunningAverage",
+      "period": 10000
+    }
+   ],
+   "components": [
+    {
+      "type": "graph",
+      "id": "propertiesGraph",
+      "title": "temperature vs time",
+      "xmin": -10,
+      "xmax": 100000,
+      "ymin": -10,
+      "ymax": 4000,
+      "properties": [
+        "temperatureFiltered"
+      ]
+    },
+    {
+      "type": "graph",
+      "id": "energyGraph",
+      "title": "Energy of the System (KE:red, PE:green, TE:blue)",
+      "xlabel": "Model Time (ps)",
+      "xmin": -10,
+      "xmax": 100000,
+      "ylabel": "eV",
+      "ymin": -160,
+      "ymax": 50,
+      "properties": [
+        "kineticEnergy",
+        "potentialEnergy",
+        "totalEnergy"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "apply-heat",
+      "text": "Apply Heat",
+      "property": "applyHeat"
+    },
+    {
+      "type": "slider",
+      "id": "refreshrate-slider",
+      "min": 1,
+      "max": 150,
+      "displayValue": "return value;",
+      "labels": [
+        {
+          "value": 1,
+          "label": "1"
+        },
+        {
+          "value": 150,
+          "label": "150"
+        }
+      ],
+      "steps": 149,
+      "title": "timeStepsPerTick",
+      "property": "timeStepsPerTick"
+    }
+  ],
+  "layout": {
+    "right": [
+      "propertiesGraph",
+      "energyGraph"
+    ]
+  },
+  "template": "wide-right"
+}
