@@ -11,6 +11,9 @@
       "viewOptions": {
         "controlButtons": "play_reset_step"
       },
+      "modelOptions": {
+        "timeStepsPerTick": 150
+      },
       "onLoad": [
         "callEvery(100, function(){",
         "  if(!get('applyHeat')) return;",
@@ -81,33 +84,32 @@
       "id": "apply-heat",
       "text": "Apply Heat",
       "property": "applyHeat"
-    },
-    {
-      "type": "slider",
-      "id": "refreshrate-slider",
-      "min": 1,
-      "max": 150,
-      "displayValue": "return value;",
-      "labels": [
-        {
-          "value": 1,
-          "label": "1"
-        },
-        {
-          "value": 150,
-          "label": "150"
-        }
-      ],
-      "steps": 149,
-      "title": "timeStepsPerTick",
-      "property": "timeStepsPerTick"
     }
   ],
   "layout": {
-    "right": [
-      "propertiesGraph",
-      "energyGraph"
-    ]
+    "right-top": [ "propertiesGraph"],
+    "right-bottom": ["energyGraph"]
   },
-  "template": "wide-right"
+  "template": [
+    {
+      "id": "right-top",
+      "left": "model.right",
+      "padding-left": "1em",
+      "height": "interactive.height/2",
+      "width": "model.width"
+    },
+    {
+      "id": "right-bottom",
+      "left": "model.right",
+      "padding-left": "1em",
+      "top": "interactive.height/2",
+      "height": "interactive.height/2",
+      "width": "model.width"
+    },
+    {
+      "id": "left-bottom",
+      "left": 0,
+      "top": "model.bottom"
+    }
+  ]
 }
