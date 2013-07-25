@@ -16,19 +16,39 @@
       },
       "onLoad": [
         "callEvery(100, function(){",
-        "  if(!get('applyHeat')) return;",
-        "  var numAtoms, i, props, newVx, newVy;",
-        "  batch(function(){",
-        "    numAtoms = getNumberOfAtoms()",
-        "    for(i=0; i<numAtoms; i++){",
-        "      props = getAtomProperties(i);",
-        "      if(props.vx >= 0) newVx =  Math.sqrt(0.000000001+props.vx*props.vx)",
-        "      if(props.vx < 0) newVx = - Math.sqrt(0.000000001+props.vx*props.vx)",
-        "      if(props.vy >= 0) newVy =  Math.sqrt(0.000000001+props.vy*props.vy)",
-        "      if(props.vy < 0) newVy = - Math.sqrt(0.000000001+props.vy*props.vy)",
-        "      setAtomProperties(i, {vx:newVx, vy:newVy});",
-        "    }",
-        "  });",
+        "  var heatType = get('applyHeat');",
+        "  if(heatType == 'no') return;",
+        "  if(heatType == 'scaling'){",
+        "    var numAtoms, i, props, ke, factor;",
+        "    batch(function(){",
+        "      ke = get('kineticEnergy');",
+        "      factor = (ke + 0.08)/ke;",
+        "      numAtoms = getNumberOfAtoms()",
+        "      for(i=0; i<numAtoms; i++){",
+        "        props = getAtomProperties(i);",
+        "        setAtomProperties(i, {vx:props.vx*factor, vy:props.vy*factor});",
+        "      }",
+        "    });",
+        "  }",
+        "  if(heatType == 'linear'){",
+        "    var numAtoms, i, props, newVx, newVy, ratio, vXConstant, vYConstant;",
+        "    batch(function(){",
+        "      numAtoms = getNumberOfAtoms()",
+        "      for(i=0; i<numAtoms; i++){",
+        "        // The idea here is to add the same amount of KE to every atom, and to keep",
+        "        // the direction of the velocity the same",
+        "        props = getAtomProperties(i);",
+        "        ratio = props.vx*props.vx/(props.vy*props.vy);",
+        "        vXConstant = 0.000000001*ratio/(1+ratio);",
+        "        vYConstant = 0.000000001 - vXConstant;",
+        "        if(props.vx >= 0) newVx =  Math.sqrt(vXConstant+props.vx*props.vx);",
+        "        if(props.vx < 0) newVx = - Math.sqrt(vXConstant+props.vx*props.vx);",
+        "        if(props.vy >= 0) newVy =  Math.sqrt(vYConstant+props.vy*props.vy);",
+        "        if(props.vy < 0) newVy = - Math.sqrt(vYConstant+props.vy*props.vy);",
+        "        setAtomProperties(i, {vx:newVx, vy:newVy});",
+        "      }",
+        "    });",
+        "  }",
         "});"
       ]
     }
@@ -37,7 +57,7 @@
     {
       "name": "applyHeat",
       "label": "Apply Heat",
-      "initialValue": true
+      "initialValue": "linear"
     }
   ],
   "filteredOutputs": [
@@ -47,7 +67,7 @@
       "label": "Temperature",
       "property": "temperature",
       "type": "RunningAverage",
-      "period": 10000
+      "period": 5000
     }
    ],
    "components": [
@@ -56,7 +76,7 @@
       "id": "propertiesGraph",
       "title": "temperature vs time",
       "xmin": -10,
-      "xmax": 100000,
+      "xmax": 200000,
       "ymin": -10,
       "ymax": 4000,
       "properties": [
@@ -69,7 +89,7 @@
       "title": "Energy of the System (KE:red, PE:green, TE:blue)",
       "xlabel": "Model Time (ps)",
       "xmin": -10,
-      "xmax": 100000,
+      "xmax": 200000,
       "ylabel": "eV",
       "ymin": -160,
       "ymax": 50,
@@ -80,10 +100,26 @@
       ]
     },
     {
-      "type": "checkbox",
+      "type": "radio",
       "id": "apply-heat",
-      "text": "Apply Heat",
-      "property": "applyHeat"
+      "orientation": "vertical",
+      "property": "applyHeat",
+      "label": "Apply Heat",
+      "labelOn": "top",
+      "options": [
+        {
+          "text": "No Heat",
+          "value": "no"
+        },
+        {
+          "text": "Using velocity scaling: (totalKE+0.08)/totalKE",
+          "value": "scaling"
+        },
+        {
+          "text": "Increasing ke on each atom by same amount",
+          "value": "linear"
+        }
+      ]
     }
   ],
   "layout": {
