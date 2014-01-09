@@ -5,6 +5,6 @@ title: simple interactive repository
 <h3>Pages</h3>
 <ul>
   {% for page in site.pages %}
-    <li><a href="{{ page.url | remove:'index.html' }}">{{ page.url }}</a></li>
+    <li><a href="{{ site.baseurl }}{{ page.url | remove:'index.html' }}">{{ page.url }}</a></li>
   {% endfor %}
 </ul>
