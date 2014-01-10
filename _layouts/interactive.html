@@ -45,7 +45,13 @@
     <script>
       (function() {
 
-        var controller;
+        var controller,
+            baseurl = '{{ site.baseurl }}';
+
+        // FIX the INTERACTIVE json so it will load correctly
+        if (baseurl) {
+          INTERACTIVE.models[0].url = baseurl.substring(1) + "/" + INTERACTIVE.models[0].url;
+        }
 
         // Need to initialize new Lab.InteractivesController(interactiveUrl, '#interactive-container');
         // it appears we can pass the javascript object from the interactive json
