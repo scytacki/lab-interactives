@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-  {% capture lab_root %}http://lab.concord.org/version/{{ page.lab_version }}{% endcapture %}
+  {% if site.lab_root %}
+    {% assign lab_root = site.lab_root %}
+  {% else %}
+    {% capture lab_root %}http://lab.concord.org/version/{{ page.lab_version }}{% endcapture %}
+  {% endif %}
   <head>
     <meta content='text/html;charset=utf-8' http-equiv='Content-Type'>
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>

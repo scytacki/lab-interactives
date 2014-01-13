@@ -1,1 +1,3 @@
 baseurl: /lab-interactives
+# Uncomment this to use a local install of the Lab framework
+# lab_root: http://localhost:9292
