@@ -43,14 +43,20 @@
     <script src='{{ lab_root }}/lab/lab.js'></script>
     {{ content }}
     <script>
+      AUTHORING = false;
+
       (function() {
 
         var controller,
             baseurl = '{{ site.baseurl }}';
 
-        // FIX the INTERACTIVE json so it will load correctly
+        // FIX the INTERACTIVE json so it will load model correctly
         if (baseurl) {
-          INTERACTIVE.models[0].url = baseurl.substring(1) + "/" + INTERACTIVE.models[0].url;
+          $.each(INTERACTIVE.models, function(index, model){
+            if(model.url) {
+              model.url = baseurl.substring(1) + "/" + model.url;
+            }
+          })
         }
 
         // Need to initialize new Lab.InteractivesController(interactiveUrl, '#interactive-container');
